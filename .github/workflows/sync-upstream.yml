@@ -5,6 +5,8 @@ name: Sync Upstream
 # - If ONLY pnpm-lock.yaml conflicts: automatically resolve by accepting upstream's
 #   lockfile and running 'pnpm install', then create PR with notice
 # - If other files conflict: abort merge and create issue for manual resolution
+#
+# Auto-merge is enabled on created PRs to automatically merge them once CI checks pass
 
 on:
   schedule:
