@@ -9,7 +9,7 @@ name: Sync Upstream
 on:
   schedule:
     # Run the first of every month
-    - cron: '0 2 1 * *'
+    - cron: "0 2 1 * *"
   workflow_dispatch: # Allow manual triggering
 
 jobs:
@@ -100,7 +100,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
 
       - name: Setup pnpm
         if: steps.check.outputs.already_synced == 'false' && steps.analyze.outputs.only_lockfile == 'true'
