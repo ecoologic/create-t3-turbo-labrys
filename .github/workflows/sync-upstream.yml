@@ -118,7 +118,7 @@ jobs:
           git checkout --theirs pnpm-lock.yaml
 
           # Update lockfile based on merged package.json
-          if ! pnpm install; then
+          if ! pnpm install --no-frozen-lockfile; then
             echo "pnpm install failed - aborting merge"
             echo "resolution_status=failed" >> "$GITHUB_OUTPUT"
             git merge --abort
