@@ -58,14 +58,32 @@ jobs:
           else
             echo "Merge conflict detected"
             echo "merge_status=conflict" >> $GITHUB_OUTPUT
+            # Don't abort - let analyze step handle conflicts
+          fi
 
-            # Get list of conflicted files
-            CONFLICTED_FILES=$(git diff --name-only --diff-filter=U)
-            echo "conflicted_files<<EOF" >> $GITHUB_OUTPUT
-            echo "$CONFLICTED_FILES" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+      - name: Analyze conflicts
+        if: steps.check.outputs.already_synced == 'false' && steps.merge.outputs.merge_status == 'conflict'
+        id: analyze
+        run: |
+          # Get list of conflicted files
+          CONFLICTED_FILES=$(git diff --name-only --diff-filter=U)
 
-            # Abort the merge to clean up
+          # Check if ONLY pnpm-lock.yaml conflicts
+          if [ "$CONFLICTED_FILES" = "pnpm-lock.yaml" ]; then
+            echo "only_lockfile=true" >> $GITHUB_OUTPUT
+            echo "Only pnpm-lock.yaml conflicts detected - will auto-resolve"
+          else
+            echo "only_lockfile=false" >> $GITHUB_OUTPUT
+            echo "Multiple files conflict - manual resolution required"
+          fi
+
+          # Store conflicted files for issue creation
+          echo "conflicted_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CONFLICTED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Abort merge if not auto-resolving
+          if [ "$CONFLICTED_FILES" != "pnpm-lock.yaml" ]; then
             git merge --abort
           fi
 
