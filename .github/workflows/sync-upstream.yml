@@ -115,13 +115,13 @@ jobs:
             }
 
       - name: Create Issue for Merge Conflict
-        if: steps.check.outputs.already_synced == 'false' && steps.merge.outputs.merge_status == 'conflict'
+        if: steps.check.outputs.already_synced == 'false' && steps.merge.outputs.merge_status == 'conflict' && steps.analyze.outputs.only_lockfile == 'false'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const branchName = process.env.branch_name;
-            const conflictedFiles = `${{ steps.merge.outputs.conflicted_files }}`;
+            const conflictedFiles = `${{ steps.analyze.outputs.conflicted_files }}`;
 
             const issueBody = `## 🔄 Upstream Sync Failed - Merge Conflict
 
