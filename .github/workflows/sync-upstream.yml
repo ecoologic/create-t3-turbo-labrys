@@ -24,6 +24,8 @@ on:
 
 jobs:
   sync:
+    # Only run this workflow in the original repository, not in repos created from template
+    if: github.repository == 'Labrys-Group/create-t3-turbo'
     runs-on: ubuntu-latest
     permissions:
       contents: write
