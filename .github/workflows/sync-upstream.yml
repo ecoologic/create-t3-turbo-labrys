@@ -38,11 +38,11 @@ jobs:
           # Get the latest commit from upstream main
           UPSTREAM_COMMIT=$(git rev-parse upstream/main)
           # Check if we have this commit locally
-          if git merge-base --is-ancestor $UPSTREAM_COMMIT HEAD; then
-            echo "already_synced=true" >> $GITHUB_OUTPUT
+          if git merge-base --is-ancestor "$UPSTREAM_COMMIT" HEAD; then
+            echo "already_synced=true" >> "$GITHUB_OUTPUT"
             echo "No new changes from upstream"
           else
-            echo "already_synced=false" >> $GITHUB_OUTPUT
+            echo "already_synced=false" >> "$GITHUB_OUTPUT"
             echo "New changes detected from upstream"
           fi
 
@@ -52,18 +52,18 @@ jobs:
         run: |
           # Create a new branch for the sync
           BRANCH_NAME="sync-upstream-$(date +%Y%m%d-%H%M%S)"
-          git checkout -b $BRANCH_NAME
-          echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+          git checkout -b "$BRANCH_NAME"
+          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_ENV"
 
           # Attempt to merge upstream changes
           if git merge upstream/main --no-edit --allow-unrelated-histories; then
             echo "Merge successful"
-            echo "merge_status=success" >> $GITHUB_OUTPUT
+            echo "merge_status=success" >> "$GITHUB_OUTPUT"
             # Push the branch
-            git push origin $BRANCH_NAME
+            git push origin "$BRANCH_NAME"
           else
             echo "Merge conflict detected"
-            echo "merge_status=conflict" >> $GITHUB_OUTPUT
+            echo "merge_status=conflict" >> "$GITHUB_OUTPUT"
             # Don't abort - let analyze step handle conflicts
           fi
 
@@ -76,17 +76,19 @@ jobs:
 
           # Check if ONLY pnpm-lock.yaml conflicts
           if [ "$CONFLICTED_FILES" = "pnpm-lock.yaml" ]; then
-            echo "only_lockfile=true" >> $GITHUB_OUTPUT
+            echo "only_lockfile=true" >> "$GITHUB_OUTPUT"
             echo "Only pnpm-lock.yaml conflicts detected - will auto-resolve"
           else
-            echo "only_lockfile=false" >> $GITHUB_OUTPUT
+            echo "only_lockfile=false" >> "$GITHUB_OUTPUT"
             echo "Multiple files conflict - manual resolution required"
           fi
 
           # Store conflicted files for issue creation
-          echo "conflicted_files<<EOF" >> $GITHUB_OUTPUT
-          echo "$CONFLICTED_FILES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          {
+            echo "conflicted_files<<EOF"
+            echo "$CONFLICTED_FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
           # Abort merge if not auto-resolving
           if [ "$CONFLICTED_FILES" != "pnpm-lock.yaml" ]; then
@@ -118,7 +120,7 @@ jobs:
           # Update lockfile based on merged package.json
           if ! pnpm install; then
             echo "pnpm install failed - aborting merge"
-            echo "resolution_status=failed" >> $GITHUB_OUTPUT
+            echo "resolution_status=failed" >> "$GITHUB_OUTPUT"
             git merge --abort
             exit 1
           fi
@@ -130,9 +132,9 @@ jobs:
           git commit --no-edit
 
           # Push the branch
-          git push origin ${{ env.branch_name }}
+          git push origin "${{ env.branch_name }}"
 
-          echo "resolution_status=success" >> $GITHUB_OUTPUT
+          echo "resolution_status=success" >> "$GITHUB_OUTPUT"
           echo "Lockfile conflict auto-resolved successfully"
 
       - name: Create Pull Request
