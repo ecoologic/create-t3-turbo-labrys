@@ -1,5 +1,11 @@
 name: Sync Upstream
 
+# This workflow syncs changes from t3-oss/create-t3-turbo upstream repository.
+# When merge conflicts occur:
+# - If ONLY pnpm-lock.yaml conflicts: automatically resolve by accepting upstream's
+#   lockfile and running 'pnpm install', then create PR with notice
+# - If other files conflict: abort merge and create issue for manual resolution
+
 on:
   schedule:
     # Run the first of every month
