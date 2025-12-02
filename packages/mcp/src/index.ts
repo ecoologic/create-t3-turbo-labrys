@@ -1,12 +1,8 @@
 import { createMcpHandler as createHandler } from "mcp-handler";
 import { z } from "zod";
 
-import { desc, eq } from "@acme/db";
-import { db } from "@acme/db/client";
-import { Post } from "@acme/db/schema";
-
 /**
- * Creates an MCP handler with post management tools.
+ * Creates an MCP handler with arithmetic tools.
  *
  * @param config - Configuration options
  * @param config.redisUrl - Optional Redis URL for SSE resumability in serverless environments.
@@ -25,243 +21,114 @@ export function createMcpHandler(config?: {
 }) {
   return createHandler(
     (server) => {
-      // List all posts
+      // Add two numbers
       server.registerTool(
-        "list_posts",
+        "add",
         {
-          description:
-            "Retrieve a list of all posts, ordered by creation date (newest first). Returns up to 10 posts by default.",
+          description: "Add two numbers together.",
           inputSchema: {
-            limit: z.number().int().min(1).max(100).optional().default(10),
+            a: z.number(),
+            b: z.number(),
           },
         },
-        async ({ limit }: { limit: number }) => {
-          try {
-            const posts = await db.query.Post.findMany({
-              orderBy: desc(Post.id),
-              limit,
-            });
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify(
-                    {
-                      success: true,
-                      count: posts.length,
-                      posts,
-                    },
-                    null,
-                    2,
-                  ),
-                },
-              ],
-            };
-          } catch (error) {
-            const errorMessage =
-              error instanceof Error ? error.message : String(error);
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify(
-                    {
-                      success: false,
-                      error: errorMessage,
-                    },
-                    null,
-                    2,
-                  ),
-                },
-              ],
-              isError: true,
-            };
-          }
-        },
-      );
-
-      // Get post by ID
-      server.registerTool(
-        "get_post",
-        {
-          description:
-            "Retrieve a specific post by its ID. Returns the post details including title, content, and timestamps.",
-          inputSchema: {
-            id: z.string().uuid(),
-          },
-        },
-        async ({ id }: { id: string }) => {
-          try {
-            const post = await db.query.Post.findFirst({
-              where: eq(Post.id, id),
-            });
-            if (!post) {
-              return {
-                content: [
+        ({ a, b }: { a: number; b: number }) => {
+          const result = a + b;
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify(
                   {
-                    type: "text",
-                    text: JSON.stringify(
-                      {
-                        success: false,
-                        error: `Post with ID ${id} not found`,
-                      },
-                      null,
-                      2,
-                    ),
+                    success: true,
+                    result,
+                    operation: "add",
+                    operands: { a, b },
                   },
-                ],
-                isError: true,
-              };
-            }
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify(
-                    {
-                      success: true,
-                      post,
-                    },
-                    null,
-                    2,
-                  ),
-                },
-              ],
-            };
-          } catch (error) {
-            const errorMessage =
-              error instanceof Error ? error.message : String(error);
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify(
-                    {
-                      success: false,
-                      error: errorMessage,
-                    },
-                    null,
-                    2,
-                  ),
-                },
-              ],
-              isError: true,
-            };
-          }
+                  null,
+                  2,
+                ),
+              },
+            ],
+          };
         },
       );
 
-      // Create a new post
+      // Subtract two numbers
       server.registerTool(
-        "create_post",
+        "subtract",
         {
-          description:
-            "Create a new post with a title and content. Returns the created post with its generated ID and timestamps.",
+          description: "Subtract the second number from the first number.",
           inputSchema: {
-            title: z.string().min(1).max(256),
-            content: z.string().min(1).max(256),
+            a: z.number(),
+            b: z.number(),
           },
         },
-        async ({ title, content }: { title: string; content: string }) => {
-          try {
-            const [newPost] = await db
-              .insert(Post)
-              .values({
-                title,
-                content,
-              })
-              .returning();
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify(
-                    {
-                      success: true,
-                      post: newPost,
-                    },
-                    null,
-                    2,
-                  ),
-                },
-              ],
-            };
-          } catch (error) {
-            const errorMessage =
-              error instanceof Error ? error.message : String(error);
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify(
-                    {
-                      success: false,
-                      error: errorMessage,
-                    },
-                    null,
-                    2,
-                  ),
-                },
-              ],
-              isError: true,
-            };
-          }
-        },
-      );
-
-      // Delete a post
-      server.registerTool(
-        "delete_post",
-        {
-          description:
-            "Delete a post by its ID. Returns success status and the deleted post ID.",
-          inputSchema: {
-            id: z.string().uuid(),
-          },
-        },
-        async ({ id }: { id: string }) => {
-          try {
-            const deletedPost = await db.query.Post.findFirst({
-              where: eq(Post.id, id),
-            });
-            if (!deletedPost) {
-              return {
-                content: [
+        ({ a, b }: { a: number; b: number }) => {
+          const result = a - b;
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify(
                   {
-                    type: "text",
-                    text: JSON.stringify(
-                      {
-                        success: false,
-                        error: `Post with ID ${id} not found`,
-                      },
-                      null,
-                      2,
-                    ),
+                    success: true,
+                    result,
+                    operation: "subtract",
+                    operands: { a, b },
                   },
-                ],
-                isError: true,
-              };
-            }
-            await db.delete(Post).where(eq(Post.id, id));
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: JSON.stringify(
-                    {
-                      success: true,
-                      message: `Post ${id} deleted successfully`,
-                      deletedPost,
-                    },
-                    null,
-                    2,
-                  ),
-                },
-              ],
-            };
-          } catch (error) {
-            const errorMessage =
-              error instanceof Error ? error.message : String(error);
+                  null,
+                  2,
+                ),
+              },
+            ],
+          };
+        },
+      );
+
+      // Multiply two numbers
+      server.registerTool(
+        "multiply",
+        {
+          description: "Multiply two numbers together.",
+          inputSchema: {
+            a: z.number(),
+            b: z.number(),
+          },
+        },
+        ({ a, b }: { a: number; b: number }) => {
+          const result = a * b;
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify(
+                  {
+                    success: true,
+                    result,
+                    operation: "multiply",
+                    operands: { a, b },
+                  },
+                  null,
+                  2,
+                ),
+              },
+            ],
+          };
+        },
+      );
+
+      // Divide two numbers
+      server.registerTool(
+        "divide",
+        {
+          description: "Divide the first number by the second number.",
+          inputSchema: {
+            a: z.number(),
+            b: z.number(),
+          },
+        },
+        ({ a, b }: { a: number; b: number }) => {
+          if (b === 0) {
             return {
               content: [
                 {
@@ -269,7 +136,7 @@ export function createMcpHandler(config?: {
                   text: JSON.stringify(
                     {
                       success: false,
-                      error: errorMessage,
+                      error: "Division by zero is not allowed",
                     },
                     null,
                     2,
@@ -279,6 +146,24 @@ export function createMcpHandler(config?: {
               isError: true,
             };
           }
+          const result = a / b;
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify(
+                  {
+                    success: true,
+                    result,
+                    operation: "divide",
+                    operands: { a, b },
+                  },
+                  null,
+                  2,
+                ),
+              },
+            ],
+          };
         },
       );
     },
