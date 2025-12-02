@@ -17,6 +17,7 @@ export const env = createEnv({
    */
   server: {
     POSTGRES_URL: z.url(),
+    REDIS_URL: z.string().url().optional(),
   },
 
   /**
