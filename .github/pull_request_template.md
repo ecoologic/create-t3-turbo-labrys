@@ -1,6 +1,7 @@
 ## Purpose
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 * https://labrys.atlassian.net/browse/XXX-NNNN
 * Outline what the PR is addressing in a brief sentence form
 * Explain how it relates to the Jira card, if it completes it or what is left to complete it
@@ -9,19 +10,21 @@
 - Outline what the PR is addressing in a brief sentence form
 - Explain how it relates to the Jira card, if it completes it or what is left to complete it
 >>>>>>> b598236 (chore: fix weird issue with template)
+=======
+<!-- What does this PR accomplish? Why is this change needed? -->
+>>>>>>> 5186341 (WIP: PR template changes)
 
 ## Approach
 
-All these are optional depending on the size and context of the work being done.
+<!-- How did you implement this? What are the key technical decisions? -->
 
-- A high-level account of how the solution was achieved
-- You might include some names of components/files for clarity, but is meant to be a general description
-- Highlight the starting point for the review, like the highest level component or page
-- Link to the automated test that proves the feature is working
-- Provide a sequence or class diagram of the areas affected, with accurate names of the components and functions involved. This is optional unless you generated it with an agent or created one for the work (smart contract designs for instance).
+## Testing
 
-## QA
+<!-- How has this been tested? What scenarios have been verified? -->
+- [ ]
+- [ ]
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 * Provide the paths at which the UI have changed
 * Instructions on how to navigate to the areas affected by the PR
@@ -41,10 +44,16 @@ Reviewers please follow [this checklist](https://medium.com/@dorinbaba/the-perfe
 =======
 - Provide the paths at which the UI have changed and instructions on how to navigate to the areas affected by the PR
 - Explain how it was before and how these changes affect the UI/system, what should people notice after the changes have been introduced
+=======
+## Breaking Changes
+>>>>>>> 5186341 (WIP: PR template changes)
 
-## Key decisions
+<!-- List any breaking changes or write "None" -->
 
+<<<<<<< HEAD
 - Important decisions with ramifications on future work
 - Tradeoffs
 - Heads up for new reusable components
 >>>>>>> b598236 (chore: fix weird issue with template)
+=======
+>>>>>>> 5186341 (WIP: PR template changes)
