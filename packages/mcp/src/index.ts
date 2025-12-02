@@ -5,6 +5,18 @@ import { desc, eq } from "@acme/db";
 import { db } from "@acme/db/client";
 import { Post } from "@acme/db/schema";
 
+/**
+ * Creates an MCP handler with post management tools.
+ *
+ * @param config - Configuration options
+ * @param config.redisUrl - Optional Redis URL for SSE resumability in serverless environments.
+ *   When provided, Redis stores stream state (last sent message position) so that if a function
+ *   times out or connection drops, streams can resume from where they left off rather than
+ *   restarting. Without Redis, streams work but cannot resume after interruptions.
+ * @param config.basePath - Base path for the API route (default: "/api")
+ * @param config.maxDuration - Maximum duration for requests in seconds (default: 60)
+ * @param config.verboseLogs - Enable verbose logging (default: false, or true in development)
+ */
 export function createMcpHandler(config?: {
   redisUrl?: string;
   basePath?: string;
@@ -274,6 +286,8 @@ export function createMcpHandler(config?: {
       // Optional server options
     },
     {
+      // Redis URL for SSE resumability: stores stream state so streams can resume
+      // after serverless function timeouts or connection drops
       redisUrl: config?.redisUrl ?? process.env.REDIS_URL,
       basePath: config?.basePath ?? "/api",
       maxDuration: config?.maxDuration ?? 60,
