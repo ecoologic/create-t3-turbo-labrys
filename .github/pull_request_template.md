@@ -6,16 +6,15 @@
 
 ## Approach
 
-<!-- How did you implement this? What are the key technical decisions? -->
+All these are optional depending on the size and context of the work being done.
 
-## Testing
+- A high-level account of how the solution was achieved
+- You might include some names of components/files for clarity, but is meant to be a general description
+- Highlight the starting point for the review, like the highest level component or page
+- Link to the automated test that proves the feature is working
+- Provide a sequence or class diagram of the areas affected, with accurate names of the components and functions involved. This is optional unless you generated it with an agent or created one for the work (smart contract designs for instance).
 
-<!-- How has this been tested? What scenarios have been verified? -->
-
-- [ ]
-- [ ]
-
-## UI Changes
+## QA
 
 - Provide the paths at which the UI have changed
 - Instructions on how to navigate to the areas affected by the PR
