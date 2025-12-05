@@ -22,6 +22,6 @@ mv PROJECT-README.md README.md
 rm scripts/init-project.sh # What a selfless hero!
 
 git add --all
-git commit "chore: ./scripts/init-project.sh"
+git commit -m "chore: ./scripts/init-project.sh"
 
 echo "Now make README.md relevant to your project!"
