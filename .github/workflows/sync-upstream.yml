@@ -17,9 +17,8 @@ name: Sync Upstream
 # 4. The workflow will then automatically merge PRs after CI passes, bypassing reviews
 
 on:
-  schedule:
-    # Run the first of every month
-    - cron: "0 2 1 * *"
+  # https://github.com/Labrys-Group/create-t3-turbo/actions/workflows/sync-upstream.yml
+  # Click "Run workflow"
   workflow_dispatch: # Allow manual triggering
 
 jobs:

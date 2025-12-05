@@ -1,5 +1,9 @@
 # create-t3-turbo
 
+**See [LABRYS_README.md](./LABRYS_README.md) first.**
+
+---
+
 > [!NOTE]
 >
 > create-t3-turbo now includes the option to use Tanstack Start for the web app!
