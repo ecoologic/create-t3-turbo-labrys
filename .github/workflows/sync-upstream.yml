@@ -236,7 +236,7 @@ jobs:
                   mutation EnableAutoMerge($pullRequestId: ID!) {
                     enablePullRequestAutoMerge(input: {
                       pullRequestId: $pullRequestId,
-                      mergeMethod: MERGE
+                      mergeMethod: SQUASH
                     }) {
                       pullRequest {
                         autoMergeRequest {
