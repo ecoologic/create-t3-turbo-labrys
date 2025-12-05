@@ -223,17 +223,30 @@ jobs:
               const hasSyncToken = '${{ secrets.SYNC_TOKEN }}' !== '';
               if (hasSyncToken && process.env.APPROVAL_TOKEN) {
                 try {
-                  const { getOctokit } = require('@actions/github');
-                  const approvalOctokit = getOctokit(process.env.APPROVAL_TOKEN);
+                  // Use fetch API directly with GITHUB_TOKEN for approval
+                  const response = await fetch(
+                    `https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/pulls/${pr.number}/reviews`,
+                    {
+                      method: 'POST',
+                      headers: {
+                        'Authorization': `Bearer ${process.env.APPROVAL_TOKEN}`,
+                        'Accept': 'application/vnd.github+json',
+                        'X-GitHub-Api-Version': '2022-11-28'
+                      },
+                      body: JSON.stringify({
+                        event: 'APPROVE',
+                        body: '🤖 Auto-approved by sync workflow (CI checks still required)'
+                      })
+                    }
+                  );
 
-                  await approvalOctokit.rest.pulls.createReview({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    pull_number: pr.number,
-                    event: 'APPROVE',
-                    body: '🤖 Auto-approved by sync workflow (CI checks still required)'
-                  });
-                  console.log(`PR #${pr.number} auto-approved using GITHUB_TOKEN`);
+                  if (response.ok) {
+                    console.log(`PR #${pr.number} auto-approved using GITHUB_TOKEN`);
+                  } else {
+                    const errorData = await response.text();
+                    console.log('Auto-approval failed:', response.status, errorData);
+                    console.log('The PR may still require manual approval.');
+                  }
                 } catch (approvalError) {
                   console.log('Auto-approval failed:', approvalError.message);
                   console.log('The PR may still require manual approval.');
