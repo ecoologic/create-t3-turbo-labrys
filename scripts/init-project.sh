@@ -28,7 +28,8 @@ pnpm add -D -w husky @commitlint/cli @commitlint/config-conventional
 pnpm exec husky init
 echo "pnpm exec commitlint --edit \$1" > .husky/commit-msg
 chmod +x .husky/commit-msg
-echo "" > .husky/pre-commit # Don't run tests
+mv scripts/config/commitlint.config.js .
+echo "" > .husky/pre-commit # Override pnpm run test
 echo "DONE."
 
 echo "Commit..."
